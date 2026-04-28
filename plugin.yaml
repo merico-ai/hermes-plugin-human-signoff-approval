@@ -1,0 +1,6 @@
+name: human-signoff-approval
+version: 0.1.0
+description: "Auto-handles APPROVAL_PENDING responses from the human-signoff proxy. Injects approval handling instructions into every LLM turn so the agent knows how to wait for human approval and retry blocked commands."
+author: "Human Signoff Project"
+hooks:
+  - pre_llm_call
