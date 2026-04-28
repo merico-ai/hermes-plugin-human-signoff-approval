@@ -26,21 +26,17 @@ This works across **all channels** (CLI, Telegram, Discord, WeChat, etc.) becaus
 
 ## Installation
 
-### Option 1: Install from GitHub (recommended)
-
 ```bash
+# Install from GitHub
 hermes plugins install merico-ai/hermes-plugin-human-signoff-approval
-hermes plugins enable human-signoff-approval
-```
-
-### Option 2: Manual installation
-
-```bash
-# Clone the repository
-git clone git@github.com:merico-ai/hermes-plugin-human-signoff-approval.git ~/.hermes/plugins/human-signoff-approval
 
 # Enable the plugin
 hermes plugins enable human-signoff-approval
+
+# Restart Gateway (required for plugin to take effect)
+launchctl bootout gui/$(id -u)/ai.hermes.gateway
+sleep 2
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.hermes.gateway.plist
 ```
 
 ## Configuration
@@ -111,8 +107,8 @@ Through any configured channel (Telegram, Discord, WeChat, etc.), send a command
 # Check plugin is enabled
 hermes plugins list
 
-# Check agent logs
-tail -20 ~/.hermes/logs/agent.log | grep -E "plugin|hook"
+# Check plugin is loaded (should show "X hook(s) loaded")
+tail -20 ~/.hermes/logs/agent.log | grep "hook(s) loaded"
 ```
 
 ## Uninstallation
