@@ -104,12 +104,23 @@ Through any configured channel (Telegram, Discord, WeChat, etc.), send a command
 ## Verification
 
 ```bash
-# Check plugin is enabled
+# Check plugin status (most reliable)
 hermes plugins list
 
-# Check plugin is loaded (should show "X hook(s) loaded")
+# Check plugin directory exists
+ls -la ~/.hermes/plugins/human-signoff-approval/
+
+# Optional: Check hook count (reference only)
+# Note: "X hook(s) loaded" includes all hooks, not just plugins
 tail -20 ~/.hermes/logs/agent.log | grep "hook(s) loaded"
 ```
+
+**Important**: The most reliable verification is `hermes plugins list`. The `"hook(s) loaded"` log message includes all hooks (system + plugins) and cannot confirm if the specific plugin is loaded.
+
+**Functional test** (recommended):
+Send a command through your channel (WeChat, Telegram, etc.) that requires approval. If the plugin is working, it will:
+1. Display the approval URL
+2. Automatically call `proxy_client wait-and-run`
 
 ## Uninstallation
 
