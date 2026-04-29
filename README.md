@@ -14,17 +14,26 @@ This works across **all channels** (CLI, Telegram, Discord, WeChat, etc.) becaus
 ## Prerequisites
 
 1. **Human Signoff MVP** is deployed and running
-2. **proxy_client** is available in PATH:
-   ```bash
-   which proxy_client
-   proxy_client --help
-   ```
-3. **proxy_client is logged in**:
-   ```bash
-   proxy_client login
-   ```
 
 ## Installation
+
+### Step 1: Install proxy_client
+
+Install and login to proxy_client:
+
+```bash
+# Install proxy_client (if not already installed)
+# Follow installation instructions from your Human Signoff MVP deployment
+
+# Verify installation
+which proxy_client
+proxy_client --help
+
+# Login
+proxy_client login
+```
+
+### Step 2: Install and enable the plugin
 
 ```bash
 # Install from GitHub
@@ -34,44 +43,11 @@ hermes plugins install merico-ai/hermes-plugin-human-signoff-approval
 hermes plugins enable human-signoff-approval
 ```
 
-### Restart Gateway (macOS only)
-
-> **Note:** These instructions are for macOS only. On Linux, Gateway runs as a systemd service and requires different restart commands.
-
-```bash
-launchctl bootout gui/$(id -u)/ai.hermes.gateway
-sleep 2
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.hermes.gateway.plist
-```
-
-## Configuration
-
-### Required: Disable streaming mode
-
-Edit `~/.hermes/config.yaml`:
-
-```yaml
-display:
-  streaming: false
-```
-
-This ensures approval URLs are delivered reliably in complete messages, especially for channels like WeChat.
-
-### Restart Gateway after config change (macOS only)
-
-> **Note:** These instructions are for macOS only. On Linux, use `systemctl --user restart hermes-gateway`.
-
-```bash
-launchctl bootout gui/$(id -u)/ai.hermes.gateway
-sleep 2
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.hermes.gateway.plist
-```
-
-### Gateway proxy setup (macOS only)
+### Step 3: Configure Gateway proxy (macOS only)
 
 > **Note:** These instructions are for macOS only. On Linux, Gateway runs as a systemd service and requires different configuration.
 
-If using Hermes Gateway with channels (Telegram, Discord, WeChat, etc.), configure proxy environment in `~/Library/LaunchAgents/ai.hermes.gateway.plist`:
+Edit `~/Library/LaunchAgents/ai.hermes.gateway.plist` and add proxy environment variables:
 
 ```xml
 <key>EnvironmentVariables</key>
@@ -87,7 +63,21 @@ If using Hermes Gateway with channels (Telegram, Discord, WeChat, etc.), configu
 </dict>
 ```
 
-Then reload:
+### Step 4: Configure streaming mode (Optional)
+
+> **Optional:** Edit `~/.hermes/config.yaml` to disable streaming mode:
+
+```yaml
+display:
+  streaming: false
+```
+
+This ensures approval URLs are delivered reliably in complete messages, especially for channels like WeChat. If you experience issues with approval URLs not showing in channels, try this setting.
+
+### Step 5: Restart Gateway (macOS only)
+
+> **Note:** These instructions are for macOS only. On Linux, use `systemctl --user restart hermes-gateway`.
+
 ```bash
 launchctl bootout gui/$(id -u)/ai.hermes.gateway
 sleep 2
