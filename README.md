@@ -86,10 +86,17 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.hermes.gateway.plist
 
 ## Usage
 
-### CLI mode
+### CLI mode (with proxy)
+
+> **Note:** CLI mode requires setting proxy environment variables manually. Gateway proxy configuration only affects the Gateway service.
 
 ```bash
+# Set proxy environment variables and start chat
+HTTP_PROXY=http://127.0.0.1:17771 \
+HTTPS_PROXY=http://127.0.0.1:17771 \
+NO_PROXY=localhost,127.0.0.1 \
 hermes chat
+
 # Send a command that requires approval
 ```
 
