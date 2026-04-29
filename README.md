@@ -32,8 +32,13 @@ hermes plugins install merico-ai/hermes-plugin-human-signoff-approval
 
 # Enable the plugin
 hermes plugins enable human-signoff-approval
+```
 
-# Restart Gateway (required for plugin to take effect)
+### Restart Gateway (macOS only)
+
+> **Note:** These instructions are for macOS only. On Linux, Gateway runs as a systemd service and requires different restart commands.
+
+```bash
 launchctl bootout gui/$(id -u)/ai.hermes.gateway
 sleep 2
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.hermes.gateway.plist
@@ -52,7 +57,9 @@ display:
 
 This ensures approval URLs are delivered reliably in complete messages, especially for channels like WeChat.
 
-Restart Gateway after changing this setting:
+### Restart Gateway after config change (macOS only)
+
+> **Note:** These instructions are for macOS only. On Linux, use `systemctl --user restart hermes-gateway`.
 
 ```bash
 launchctl bootout gui/$(id -u)/ai.hermes.gateway
@@ -60,11 +67,11 @@ sleep 2
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.hermes.gateway.plist
 ```
 
-### Gateway proxy setup (for Gateway mode)
+### Gateway proxy setup (macOS only)
 
-If using Hermes Gateway with channels (Telegram, Discord, WeChat, etc.), configure proxy environment:
+> **Note:** These instructions are for macOS only. On Linux, Gateway runs as a systemd service and requires different configuration.
 
-Edit `~/Library/LaunchAgents/ai.hermes.gateway.plist`:
+If using Hermes Gateway with channels (Telegram, Discord, WeChat, etc.), configure proxy environment in `~/Library/LaunchAgents/ai.hermes.gateway.plist`:
 
 ```xml
 <key>EnvironmentVariables</key>
@@ -81,7 +88,6 @@ Edit `~/Library/LaunchAgents/ai.hermes.gateway.plist`:
 ```
 
 Then reload:
-
 ```bash
 launchctl bootout gui/$(id -u)/ai.hermes.gateway
 sleep 2
