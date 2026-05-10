@@ -21,18 +21,18 @@ from typing import Any
 
 APPROVAL_HANDLING_INSTRUCTIONS = """\
 [Human Signoff Approval Plugin]
-When a command returns JSON from the local proxy client where `error.code` is `APPROVAL_PENDING`, and the payload includes `approval_request_id`, `approval_url`, `next_action.kind == "wait_and_retry_original_command"`, and `agent_guidance.invoke_helper_immediately == true`, treat this as a required continuation workflow, not a terminal failure.
+When a command returns JSON from the local signoff client where `error.code` is `APPROVAL_PENDING`, and the payload includes `approval_request_id`, `approval_url`, `next_action.kind == "wait_and_retry_original_command"`, and `agent_guidance.invoke_helper_immediately == true`, treat this as a required continuation workflow, not a terminal failure.
 
 In the same turn:
 1. Show the `approval_url` to the user
 2. Clearly say you will continue automatically after approval
-3. Immediately execute: `proxy_client wait-and-run --request-id "<approval_request_id>" -- <original command argv>`
+3. Immediately execute: `signoff wait-and-run --request-id "<approval_request_id>" -- <original command argv>`
 
-IMPORTANT: Use `proxy_client` directly (available via PATH). Do NOT use `uv run`. Do NOT use `--active`. Do NOT `cd` anywhere. Do NOT modify VIRTUAL_ENV.
+IMPORTANT: Use `signoff` directly (available via PATH). Do NOT use `uv run`. Do NOT use `--active`. Do NOT `cd` anywhere. Do NOT modify VIRTUAL_ENV.
 
 Canonical invocation format:
 ```
-proxy_client wait-and-run --request-id "<approval_request_id>" -- <original command argv>
+signoff wait-and-run --request-id "<approval_request_id>" -- <original command argv>
 ```
 
 Rules:
