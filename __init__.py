@@ -3,8 +3,8 @@ Human Signoff Approval Plugin for Hermes Agent.
 
 Injects approval handling instructions into every LLM turn via the
 pre_llm_call hook, ensuring the agent knows how to handle APPROVAL_PENDING
-responses regardless of which channel (CLI, Telegram, Discord, etc.) the
-user sends messages through.
+responses. When a command is blocked pending approval, the agent presents
+the approval URL to the user and stops — it does not poll or retry.
 
 Works in both CLI and Gateway modes because plugin hooks registered via
 ctx.register_hook() are active in all modes.
@@ -21,28 +21,20 @@ from typing import Any
 
 APPROVAL_HANDLING_INSTRUCTIONS = """\
 [Human Signoff Approval Plugin]
-When a command returns JSON from the local signoff client where `error.code` is `APPROVAL_PENDING`, and the payload includes `approval_request_id`, `approval_url`, `next_action.kind == "wait_and_retry_original_command"`, and `agent_guidance.invoke_helper_immediately == true`, treat this as a required continuation workflow, not a terminal failure.
+When a command returns JSON from the local signoff client where `error.code` is `APPROVAL_PENDING`, and the payload includes `approval_request_id` and `approval_url`, treat this as a blocking approval gate — NOT a terminal failure, and NOT something you can bypass.
 
-In the same turn:
-1. Show the `approval_url` to the user
-2. Clearly say you will continue automatically after approval
-3. Immediately execute: `signoff wait-and-run --request-id "<approval_request_id>" -- <original command argv>`
-
-IMPORTANT: Use `signoff` directly (available via PATH). Do NOT use `uv run`. Do NOT use `--active`. Do NOT `cd` anywhere. Do NOT modify VIRTUAL_ENV.
-
-Canonical invocation format:
-```
-signoff wait-and-run --request-id "<approval_request_id>" -- <original command argv>
-```
+Action required:
+1. Show the `approval_url` to the user so they can review and approve
+2. Tell the user the command is blocked pending approval
+3. STOP — do not take further action on this command
 
 Rules:
-- Do NOT stop after telling the user to approve
-- Do NOT wait for the user to say approval is complete
-- Do NOT hand-roll polling logic
-- Do NOT rewrite the original command
-- Do NOT use `uv run` — it will conflict with the gateway's virtual environment
-- If the helper reports `rejected`, `expired`, or timeout, stop and tell the user
-- This rule overrides task-specific habits or skills that would otherwise pause after showing the approval link
+- Do NOT execute `signoff wait-and-run` or any polling/retry logic
+- Do NOT attempt to re-execute the blocked command yourself
+- Do NOT try to skip or bypass the approval by running the original command directly
+- Do NOT hand-roll polling logic or wait loops
+- Do NOT continue working on the blocked task until the user explicitly tells you approval is granted
+- Simply present the approval URL and wait for the user to come back with next steps
 """
 
 
