@@ -1,13 +1,14 @@
 # Hermes Human Signoff Approval Plugin
 
-Auto-handles `APPROVAL_PENDING` responses from the human-signoff proxy for Hermes Agent.
+Auto-handles `APPROVAL_PENDING` responses from Human Signoff for Hermes Agent.
 
 ## How it works
 
 This plugin registers a `pre_llm_call` hook that injects approval handling instructions into every LLM turn. When a command is blocked and requires approval, the agent will:
 
 1. Show the approval URL to the user
-2. Automatically call `signoff wait-and-run` to wait for approval and retry
+2. Automatically call `signoff wait` to wait for approval completion
+3. Retry the original command after approval is granted
 
 This works across **all channels** (CLI, Telegram, Discord, WeChat, etc.) because plugin hooks are active in both CLI and Gateway modes.
 
@@ -128,7 +129,8 @@ tail -20 ~/.hermes/logs/agent.log | grep "hook(s) loaded"
 **Functional test** (recommended):
 Send a command through your channel (WeChat, Telegram, etc.) that requires approval. If the plugin is working, it will:
 1. Display the approval URL
-2. Automatically call `signoff wait-and-run`
+2. Automatically call `signoff wait` to wait for approval
+3. Retry the original command after approval is granted
 
 ## Uninstallation
 
@@ -155,11 +157,12 @@ rm -rf ~/.hermes/plugins/human-signoff-approval
 2. Restart Hermes Gateway
 3. Check Gateway logs: `tail -f ~/.hermes/logs/gateway.log`
 
-### `wait-and-run` fails
+### `signoff wait` fails
 
 1. Ensure signoff is logged in: `signoff login`
 2. Check signoff can reach backend
 3. Verify `TERMINAL_TIMEOUT=600` is set in Gateway environment
+4. Check the approval request ID is correct
 
 ## License
 
